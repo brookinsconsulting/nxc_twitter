@@ -57,7 +57,7 @@ class nxcTwitterFeed
 					$created_at   = strtotime( $status->created_at );
 					$created_diff = $current_time - $created_at;
 					if( $created_diff < 60 ) {
-						$created_ago = ezi18n(
+						$created_ago = ezpI18n::tr(
 							'extension/twitter_feed', '%secons seconds ago', null, array( '%secons' => ceil( $created_diff ) )
 						);
 					} elseif( $created_diff < 60 * 60 ) {
