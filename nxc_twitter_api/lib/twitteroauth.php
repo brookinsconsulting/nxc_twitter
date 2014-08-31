@@ -6,6 +6,9 @@
  * The first PHP Library to support OAuth for Twitter's REST API.
  */
 
+/* Load OAuth lib. You can find it at http://oauth.net */
+// require_once('OAuth.php');
+
 /**
  * Twitter OAuth class
  */
@@ -40,8 +43,8 @@ class TwitterOAuth {
    * Set API URLS
    */
   function accessTokenURL()  { return 'https://api.twitter.com/oauth/access_token'; }
-  function authenticateURL() { return 'https://twitter.com/oauth/authenticate'; }
-  function authorizeURL()    { return 'https://twitter.com/oauth/authorize'; }
+  function authenticateURL() { return 'https://api.twitter.com/oauth/authenticate'; }
+  function authorizeURL()    { return 'https://api.twitter.com/oauth/authorize'; }
   function requestTokenURL() { return 'https://api.twitter.com/oauth/request_token'; }
 
   /**
@@ -69,13 +72,11 @@ class TwitterOAuth {
    *
    * @returns a key/value array containing oauth_token and oauth_token_secret
    */
-  function getRequestToken($oauth_callback = NULL) {
+  function getRequestToken($oauth_callback) {
     $parameters = array();
-    if (!empty($oauth_callback)) {
-      $parameters['oauth_callback'] = $oauth_callback;
-    } 
+    $parameters['oauth_callback'] = $oauth_callback;
     $request = $this->oAuthRequest($this->requestTokenURL(), 'GET', $parameters);
-	$token = OAuthUtil::parse_parameters($request);
+    $token = OAuthUtil::parse_parameters($request);
     $this->token = new OAuthConsumer($token['oauth_token'], $token['oauth_token_secret']);
     return $token;
   }
@@ -105,11 +106,9 @@ class TwitterOAuth {
    *                "user_id" => "9436992",
    *                "screen_name" => "abraham")
    */
-  function getAccessToken($oauth_verifier = FALSE) {
+  function getAccessToken($oauth_verifier) {
     $parameters = array();
-    if (!empty($oauth_verifier)) {
-      $parameters['oauth_verifier'] = $oauth_verifier;
-    }
+    $parameters['oauth_verifier'] = $oauth_verifier;
     $request = $this->oAuthRequest($this->accessTokenURL(), 'GET', $parameters);
     $token = OAuthUtil::parse_parameters($request);
     $this->token = new OAuthConsumer($token['oauth_token'], $token['oauth_token_secret']);
@@ -173,7 +172,6 @@ class TwitterOAuth {
    * Format and sign an OAuth / API request
    */
   function oAuthRequest($url, $method, $parameters) {
-  	$parameters['oauth_timestamp'] = time();
     if (strrpos($url, 'https://') !== 0 && strrpos($url, 'http://') !== 0) {
       $url = "{$this->host}{$url}.{$this->format}";
     }
